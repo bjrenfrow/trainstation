@@ -1,0 +1,29 @@
+getKey util convert 4:14 PM -> 1614
+
+one key/value has the whole data state
+
+data = {
+ 1614: { trains: ['ABC'], next: 1620 },
+}
+
+The rest are Read Thru Cache
+
+1614: 1620
+1615: 1620
+1616: 1620
+etc...
+
+60 * 24 keys
+
+-- when writing
+lock the data
+process the entire data state
+invalidate all the cache entries
+unlock data
+
+further writes wait for lock to be released
+
+-- when reading
+check cache, if not pull out the object, store in cache.
+
+convert 1614 to timestamp and return
