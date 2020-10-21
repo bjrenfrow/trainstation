@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo:4.4.1
+    ports:
+      - 27017:27017
+
+  api:
+    image: node:14.14
+    ports:
+      - 3000:3000
+    command: npm start
+    environment:
+      - MONGO_URL=mongodb://mongo:27017
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo
