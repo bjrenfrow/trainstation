@@ -1,10 +1,13 @@
 version: "3"
 
 services:
-  mongo:
-    image: mongo:4.4.1
+  db:
+    image: couchdb:3
     ports:
-      - 27017:27017
+      - 5984:5984
+    environment:
+      - COUCHDB_USER=user
+      - COUCHDB_PASSWORD=pw
 
   api:
     image: node:14.14
@@ -12,10 +15,10 @@ services:
       - 3000:3000
     command: npm start
     environment:
-      - MONGO_URL=mongodb://mongo:27017
+      - COUCHDB_URL=http://user:pw@db:5984
       - PORT=3000
     working_dir: /app
     volumes:
       - .:/app
     depends_on:
-      - mongo
+      - db
