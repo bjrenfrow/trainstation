@@ -26,55 +26,58 @@ export async function init() {
   await db.set(DATA_KEY, data);
 }
 
-function toHash(arr) {
-  return arr.reduce((accum, item) => {
-    accum[item] = true;
-    return accum;
-  });
-}
+const toHash = (arr) => arr.reduce((accum, item) => {
+  accum[item] = true;
+  return accum;
+});
 
 export function schedule({ trainId, schedule }) {
   const scheduleHash = toHash(schedule);
   const data = await db.fetch(DATA_KEY);
   let firstMulti, nextMulti;
 
+  // Go backwards and everytime a multi train time is found:
+  // Cache this value as the next multi time until the next multi train time is found
   TIMES_IN_REVERSE.forEach((time) => {
     let { trains } = data[time];
 
     const trainWasScheduledNow = trains[trainId];
     const trainToScheduleNow = scheduleHash[time];
 
-    // train needs to be added to schedule
+    // train needs to be added to scheduled time
     if (!trainWasScheduledNow && trainToScheduleNow) {
       data[time].trains[trainId] = true;
     }
 
-    // train needs to be removed from schedule
+    // train needs to be removed from scheduled time
     if (trainWasScheduledNow && !trainToScheduleNow) {
       delete data[time].trains[trainId];
     }
 
-    // Next multi train time will be the last multi that was found
+    // Cache the next multitrain
     if (nextMulti) {
+      // TODO: Should we set the cache value here if value is diff?
       data[time].nextMultiTrain = nextMulti;
     }
 
     const trainCountAtTime = Object.keys(data[time].trains).length;
 
+    // Is a Multi train time?
     if (trainCountAtTime > 1) {
-      // Now in a multi train time!
-      if (!nextMulti) {
-        firstMulti = time;
-      }
+      // Track the first one so we can do a full loop from here.
+      if (!nextMulti) { firstMulti = time; }
 
       nextMulti = time;
     }
   });
 
+  // Never found a multi train time. exit.
+  if (!firstMulti) { return; }
+
   TIMES_IN_REVERSE.forEach((time) => {
-    if (time === firstMulti || !nextMulti) {
-      return false;
-    }
+
+    // Have gone a full loop around, exit.
+    if (me === firstMulti) { return false; }
 
     data[time].nextMultiTrain = nextMulti;
   }
