@@ -45,7 +45,7 @@ export const set = (key, value) => store.insert({value}, key);
 
 export const fetch = async (key) => {
   const response = await store.get(key);
-  return response?.value || undefined;
+  return response?.value || null;
 }
 
 export const keys = async () => {

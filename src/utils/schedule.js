@@ -1,12 +1,12 @@
 import * as db from '../models/db.js';
-
-const DATA_KEY = 'state';
+import { STORE_KEY } from '../models/schedule.js';
 
 async function dbIsEmpty() {
   const keys = await db.keys();
   return keys.length === 0;
 }
 
+// make an empty data object in the DB
 export async function init({ times }) {
   const isEmpty = await dbIsEmpty();
 
@@ -21,7 +21,7 @@ export async function init({ times }) {
     }
   });
 
-  await db.set(DATA_KEY, data);
+  await db.set(STORE_KEY, data);
   return data;
 }
 

@@ -14,3 +14,5 @@ export function generateTimeKeys({ hours = 24, minutes = 60 } = {}) {
 
   return keys;
 }
+
+export const TIME_KEYS = generateTimeKeys();
