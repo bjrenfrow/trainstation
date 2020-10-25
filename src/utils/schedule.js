@@ -1,7 +1,5 @@
-import TIME_KEYS from '../utils/time-keys.js';
-import db from './db.js';
+import * as db from '../models/db.js';
 
-const TIMES_IN_REVERSE = TIME_KEYS.reverse();
 const DATA_KEY = 'state';
 
 async function dbIsEmpty() {
@@ -9,14 +7,14 @@ async function dbIsEmpty() {
   return keys.length === 0;
 }
 
-export async function init() {
-  const isEmpty = await dbisEmpty();
+export async function init({ times }) {
+  const isEmpty = await dbIsEmpty();
 
   if (!isEmpty) { return; }
 
   const data = {};
 
-  TIME_KEYS.forEach(time => {
+  times.forEach(time => {
     data[time] = {
       nextMultiTrain: undefined,
       trains: {},
@@ -24,21 +22,23 @@ export async function init() {
   });
 
   await db.set(DATA_KEY, data);
+  return data;
 }
 
 const toHash = (arr) => arr.reduce((accum, item) => {
   accum[item] = true;
   return accum;
-});
+}, {});
 
-export function schedule({ trainId, schedule }) {
+// Do everything in memory on the schedule data structure
+// Then commit changes to the cache
+export function schedule({ data, trainId, schedule, times }) {
+  const timesDesc = times.reverse();
   const scheduleHash = toHash(schedule);
-  const data = await db.fetch(DATA_KEY);
   let firstMulti, nextMulti;
 
-  // Go backwards and everytime a multi train time is found:
-  // Cache this value as the next multi time until the next multi train time is found
-  TIMES_IN_REVERSE.forEach((time) => {
+  // Go backwards in time
+  timesDesc.forEach((time) => {
     let { trains } = data[time];
 
     const trainWasScheduledNow = trains[trainId];
@@ -54,9 +54,8 @@ export function schedule({ trainId, schedule }) {
       delete data[time].trains[trainId];
     }
 
-    // Cache the next multitrain
+    // if multi train in the future assign it now
     if (nextMulti) {
-      // TODO: Should we set the cache value here if value is diff?
       data[time].nextMultiTrain = nextMulti;
     }
 
@@ -71,14 +70,14 @@ export function schedule({ trainId, schedule }) {
     }
   });
 
-  // Never found a multi train time. exit.
-  if (!firstMulti) { return; }
-
-  TIMES_IN_REVERSE.forEach((time) => {
+  for (let time of timesDesc) {
+    // loop around in case the next train comes tomorrow.
+    // also has the handy benefit of setting everything to undefined if no multi trains were found
+    data[time].nextMultiTrain = nextMulti;
 
     // Have gone a full loop around, exit.
-    if (me === firstMulti) { return false; }
-
-    data[time].nextMultiTrain = nextMulti;
+    if (time === firstMulti) { break; }
   }
+
+  return data;
 }
