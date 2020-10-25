@@ -12,7 +12,7 @@ describe('Schedule Util', function() {
 
   it('correctly makes a simple train schedule', async function() {
     const times = generateTimeKeys({ hours: 1, minutes: 20 });
-    let data = await init({ times });
+    let store = await initStore({ times });
 
     let train1 = {
       trainId: 'ABC1',
@@ -29,46 +29,46 @@ describe('Schedule Util', function() {
       schedule: ['0000', '0005', '0010', '0015'],
     };
 
-    expect(data['0000'].nextMultiTrain).to.equal(undefined);
+    expect(store['0000'].nextMultiTrain).to.equal(undefined);
 
-    data = schedule({ trainId: train1.trainId, schedule: train1.schedule, times, data });
+    store = schedule({ trainId: train1.trainId, schedule: train1.schedule, times, store });
 
-    expect(data['0000'].nextMultiTrain).to.equal(undefined);
+    expect(store['0000'].nextMultiTrain).to.equal(undefined);
 
-    data = schedule({ trainId: train2.trainId, schedule: train2.schedule, times, data });
+    store = schedule({ trainId: train2.trainId, schedule: train2.schedule, times, store });
 
-    expect(data['0000'].nextMultiTrain).to.equal(undefined);
+    expect(store['0000'].nextMultiTrain).to.equal(undefined);
 
-    data = schedule({ trainId: train3.trainId, schedule: train3.schedule, times, data });
+    store = schedule({ trainId: train3.trainId, schedule: train3.schedule, times, store });
 
-    expect(data['0000'].nextMultiTrain).to.equal('0005');
-    expect(data['0001'].nextMultiTrain).to.equal('0005');
-    expect(data['0002'].nextMultiTrain).to.equal('0005');
-    expect(data['0003'].nextMultiTrain).to.equal('0005');
-    expect(data['0004'].nextMultiTrain).to.equal('0005');
+    expect(store['0000'].nextMultiTrain).to.equal('0005');
+    expect(store['0001'].nextMultiTrain).to.equal('0005');
+    expect(store['0002'].nextMultiTrain).to.equal('0005');
+    expect(store['0003'].nextMultiTrain).to.equal('0005');
+    expect(store['0004'].nextMultiTrain).to.equal('0005');
 
-    expect(data['0005'].nextMultiTrain).to.equal('0010');
-    expect(data['0006'].nextMultiTrain).to.equal('0010');
-    expect(data['0007'].nextMultiTrain).to.equal('0010');
-    expect(data['0008'].nextMultiTrain).to.equal('0010');
-    expect(data['0009'].nextMultiTrain).to.equal('0010');
+    expect(store['0005'].nextMultiTrain).to.equal('0010');
+    expect(store['0006'].nextMultiTrain).to.equal('0010');
+    expect(store['0007'].nextMultiTrain).to.equal('0010');
+    expect(store['0008'].nextMultiTrain).to.equal('0010');
+    expect(store['0009'].nextMultiTrain).to.equal('0010');
 
-    expect(data['0010'].nextMultiTrain).to.equal('0015');
-    expect(data['0011'].nextMultiTrain).to.equal('0015');
-    expect(data['0012'].nextMultiTrain).to.equal('0015');
-    expect(data['0013'].nextMultiTrain).to.equal('0015');
-    expect(data['0014'].nextMultiTrain).to.equal('0015');
+    expect(store['0010'].nextMultiTrain).to.equal('0015');
+    expect(store['0011'].nextMultiTrain).to.equal('0015');
+    expect(store['0012'].nextMultiTrain).to.equal('0015');
+    expect(store['0013'].nextMultiTrain).to.equal('0015');
+    expect(store['0014'].nextMultiTrain).to.equal('0015');
 
-    expect(data['0015'].nextMultiTrain).to.equal('0000');
-    expect(data['0016'].nextMultiTrain).to.equal('0000');
-    expect(data['0017'].nextMultiTrain).to.equal('0000');
-    expect(data['0018'].nextMultiTrain).to.equal('0000');
-    expect(data['0019'].nextMultiTrain).to.equal('0000');
+    expect(store['0015'].nextMultiTrain).to.equal('0000');
+    expect(store['0016'].nextMultiTrain).to.equal('0000');
+    expect(store['0017'].nextMultiTrain).to.equal('0000');
+    expect(store['0018'].nextMultiTrain).to.equal('0000');
+    expect(store['0019'].nextMultiTrain).to.equal('0000');
   });
 
   it('handles a single deletion properly', async function() {
     const times = generateTimeKeys({ hours: 1, minutes: 20 });
-    let data = await init({ times });
+    let store = await init({ times });
 
     let train1 = {
       trainId: 'ABC1',
@@ -85,29 +85,29 @@ describe('Schedule Util', function() {
       schedule: ['0010'],
     };
 
-    expect(data['0000'].nextMultiTrain).to.equal(undefined);
+    expect(store['0000'].nextMultiTrain).to.equal(undefined);
 
-    data = schedule({ trainId: train1.trainId, schedule: train1.schedule, times, data });
+    store = schedule({ trainId: train1.trainId, schedule: train1.schedule, times, store });
 
-    expect(data['0000'].nextMultiTrain).to.equal(undefined);
+    expect(store['0000'].nextMultiTrain).to.equal(undefined);
 
-    data = schedule({ trainId: train2.trainId, schedule: train2.schedule, times, data });
+    store = schedule({ trainId: train2.trainId, schedule: train2.schedule, times, store });
 
-    expect(data['0000'].nextMultiTrain).to.equal('0010');
-    expect(data['0010'].nextMultiTrain).to.equal('0000');
+    expect(store['0000'].nextMultiTrain).to.equal('0010');
+    expect(store['0010'].nextMultiTrain).to.equal('0000');
 
-    data = schedule({ trainId: train3.trainId, schedule: train3.schedule, times, data });
+    store = schedule({ trainId: train3.trainId, schedule: train3.schedule, times, store });
 
-    expect(data['0000'].nextMultiTrain).to.equal('0010');
-    expect(data['0005'].nextMultiTrain).to.equal('0010');
-    expect(data['0010'].nextMultiTrain).to.equal('0010');
-    expect(data['0015'].nextMultiTrain).to.equal('0010');
+    expect(store['0000'].nextMultiTrain).to.equal('0010');
+    expect(store['0005'].nextMultiTrain).to.equal('0010');
+    expect(store['0010'].nextMultiTrain).to.equal('0010');
+    expect(store['0015'].nextMultiTrain).to.equal('0010');
   });
 
 
   it('handles full deletion properly', async function() {
     const times = generateTimeKeys({ hours: 1, minutes: 20 });
-    let data = await init({ times });
+    let store = await init({ times });
 
     let train1 = {
       trainId: 'ABC1',
@@ -124,22 +124,22 @@ describe('Schedule Util', function() {
       schedule: [],
     };
 
-    expect(data['0000'].nextMultiTrain).to.equal(undefined);
+    expect(store['0000'].nextMultiTrain).to.equal(undefined);
 
-    data = schedule({ trainId: train1.trainId, schedule: train1.schedule, times, data });
+    store = schedule({ trainId: train1.trainId, schedule: train1.schedule, times, store });
 
-    expect(data['0000'].nextMultiTrain).to.equal(undefined);
+    expect(store['0000'].nextMultiTrain).to.equal(undefined);
 
-    data = schedule({ trainId: train2.trainId, schedule: train2.schedule, times, data });
+    store = schedule({ trainId: train2.trainId, schedule: train2.schedule, times, store });
 
-    expect(data['0000'].nextMultiTrain).to.equal('0010');
-    expect(data['0010'].nextMultiTrain).to.equal('0000');
+    expect(store['0000'].nextMultiTrain).to.equal('0010');
+    expect(store['0010'].nextMultiTrain).to.equal('0000');
 
-    data = schedule({ trainId: train3.trainId, schedule: train3.schedule, times, data });
+    store = schedule({ trainId: train3.trainId, schedule: train3.schedule, times, store });
 
-    expect(data['0000'].nextMultiTrain).to.equal(undefined);
-    expect(data['0005'].nextMultiTrain).to.equal(undefined);
-    expect(data['0010'].nextMultiTrain).to.equal(undefined);
-    expect(data['0015'].nextMultiTrain).to.equal(undefined);
+    expect(store['0000'].nextMultiTrain).to.equal(undefined);
+    expect(store['0005'].nextMultiTrain).to.equal(undefined);
+    expect(store['0010'].nextMultiTrain).to.equal(undefined);
+    expect(store['0015'].nextMultiTrain).to.equal(undefined);
   });
 });
