@@ -24,6 +24,8 @@ export async function getNextMultiTrain(time) {
     return null;
   }
 
+  // TODO calculate current time stamp from time of day data
+
   return nextTime;
 }
 
