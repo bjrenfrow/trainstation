@@ -22,8 +22,8 @@ export const TIME_KEYS = generateTimeKeys();
 
 function toHourAndMinute(time) {
   return {
-    hour: time.substring(0,1),
-    minute: time.substring(2,3),
+    hour: time.substring(0,2),
+    minute: time.substring(2,4),
   };
 }
 
@@ -41,7 +41,7 @@ function happensTomorrow(now, next) {
  * @return {[type]}          [isodate]
  */
 export function getISODateFrom(nextTime) {
-   const  next = toHourAndMinute(nextTime);
+   const next = toHourAndMinute(nextTime);
    let now = DateTime.local();
 
    const minuteDelta = Math.abs(now.minute - next.minute);
@@ -53,5 +53,5 @@ export function getISODateFrom(nextTime) {
      now = now.plus({ minutes: minuteDelta }).plus({ hours: hourDelta});
    }
 
-   return now.toIso();
+   return now.toISO();
 }

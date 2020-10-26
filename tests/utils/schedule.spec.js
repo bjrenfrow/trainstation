@@ -1,6 +1,6 @@
 import chai from 'chai';
 import * as db from '../../src/models/db.js';
-import { init, schedule } from '../../src/utils/schedule.js';
+import { initStore, schedule } from '../../src/utils/schedule.js';
 import { generateTimeKeys } from '../../src/utils/time.js';
 
 const { expect } = chai;
@@ -68,7 +68,7 @@ describe('Schedule Util', function() {
 
   it('handles a single deletion properly', async function() {
     const times = generateTimeKeys({ hours: 1, minutes: 20 });
-    let store = await init({ times });
+    let store = await initStore({ times });
 
     let train1 = {
       trainId: 'ABC1',
@@ -107,7 +107,7 @@ describe('Schedule Util', function() {
 
   it('handles full deletion properly', async function() {
     const times = generateTimeKeys({ hours: 1, minutes: 20 });
-    let store = await init({ times });
+    let store = await initStore({ times });
 
     let train1 = {
       trainId: 'ABC1',

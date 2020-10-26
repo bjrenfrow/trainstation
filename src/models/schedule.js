@@ -1,7 +1,6 @@
-import { schedule } from '../utils/schedule';
 import * as db from './db.js';
 import { Mutex } from 'async-mutex';
-import { TIME_KEYS, getISODateFrom } from '../utils/time';
+import { TIME_KEYS, getISODateFrom } from '../utils/time.js';
 
 export const STORE_KEY = 'store';
 
@@ -30,13 +29,13 @@ export async function getNextMultiTrain(time) {
 
 const lock = new Mutex();
 
-export function flushCache({ times }) {
-  for (key of TIME_KEYS) {
+export async function flushCache({ times }) {
+  for (let key of times) {
     await db.set(key, undefined);
   }
 }
 
-export function scheduleNextTrain({ trainId, schedule, times = TIME_KEYS }) {
+export async function scheduleNextTrain({ trainId, schedule, times = TIME_KEYS }) {
   // locking is important so the main data state is not being overwritten
   // simultaneously by multiple requests.
   let release = await lock.acquire();
@@ -48,7 +47,7 @@ export function scheduleNextTrain({ trainId, schedule, times = TIME_KEYS }) {
     await flushCache({ times });
   } catch (e) {
     console.error(e);
-  } finally () {
+  } finally {
     release();
   }
 }

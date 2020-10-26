@@ -22,10 +22,22 @@ describe('Time Keys Util', function() {
       MockDate.reset();
     });
 
-    it.only('nur', function() {
+    it('gets the right iso for a future time', function() {
       MockDate.set(new Date('2020-10-01T01:00:00'));
-      const iso = getISODateFrom('1200');
-      console.log({iso});
+      const iso = getISODateFrom('1220');
+      expect(iso).to.equal('2020-10-01T12:20:00.000+00:00');
+    });
+
+    it('gets the right iso for the same time as now', function() {
+      MockDate.set(new Date('2020-10-01T01:00:00'));
+      const iso = getISODateFrom('0100');
+      expect(iso).to.equal('2020-10-01T01:00:00.000+00:00');
+    });
+
+    it('get the tomorrows time when the time is prior in the day', function() {
+      MockDate.set(new Date('2020-10-01T12:00:00'));
+      const iso = getISODateFrom('0800');
+      expect(iso).to.equal('2020-10-02T08:00:00.000+00:00');
     });
   });
 });
