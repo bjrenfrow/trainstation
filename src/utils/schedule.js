@@ -35,7 +35,7 @@ const toHash = (arr) => arr.reduce((accum, item) => {
  * @param  {[type]} store    [The main data structure]
  * @param  {[type]} trainId  [The unique trainId]
  * @param  {[type]} schedule [The new schedule for the train]
- * @param  {[type]} times    [an array of times in the format HHMM]
+ * @param  {[type]} times    [an array of times in the format HHMM, usually representing a full day]
  * @return {[type]}          [The store updated with the new schedule]
  */
 export function schedule({ store, trainId, schedule, times }) {

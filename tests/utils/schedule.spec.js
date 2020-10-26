@@ -1,7 +1,7 @@
 import chai from 'chai';
 import * as db from '../../src/models/db.js';
 import { init, schedule } from '../../src/utils/schedule.js';
-import { generateTimeKeys } from '../../src/utils/time-keys.js';
+import { generateTimeKeys } from '../../src/utils/time.js';
 
 const { expect } = chai;
 

@@ -1,7 +1,7 @@
 import { schedule } from '../utils/schedule';
 import * as db from './db.js';
 import { Mutex } from 'async-mutex';
-import { TIME_KEYS } from '../utils/time-keys';
+import { TIME_KEYS, getISODateFrom } from '../utils/time';
 
 export const STORE_KEY = 'store';
 
@@ -24,9 +24,8 @@ export async function getNextMultiTrain(time) {
     return null;
   }
 
-  // TODO calculate current time stamp from time of day data
-
-  return nextTime;
+  //  calulate time from hour minute of next multi train
+  return getISODateFrom(nextTime);
 }
 
 const lock = new Mutex();
