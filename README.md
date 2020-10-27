@@ -1,6 +1,6 @@
 # Train station
-This is a service provides endpoints that track and manage
-the train schedules for this specific station.
+This is a service that provides endpoints that track and manage
+the train schedules for a specific station.
 
 # Install
 Install Docker and Docker-Compose: https://docs.docker.com/compose/install/
@@ -13,7 +13,7 @@ Install Docker and Docker-Compose: https://docs.docker.com/compose/install/
 
 # Run tests
 1. Open a terminal
-1. Run `docker-compose run --rm api npm test`. This will start up the server in the background
+1. Run `docker-compose run --rm api npm test`.
 
 # API
 
