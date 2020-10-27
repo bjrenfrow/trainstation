@@ -1,15 +1,16 @@
 import express from 'express';
 import yup from 'yup';
-
+import { getNextMultiTrain, scheduleNextTrain } from './models/schedule.js';
+import { initStore } from './utils/schedule.js';
+import { TIME_KEYS } from './utils/time.js';
 const { PORT } = process.env;
 
 const app = express()
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+// Init DB on start
+initStore({ times: TIME_KEYS });
 
 // E.G. 6:30PM is 1830
 const TIME_REGEX = /[0-9]{4}$/;
@@ -19,10 +20,6 @@ const scheduleSchema = yup.object().shape({
   schedule: yup.array().of(timeSchema).required(),
   trainId: trainSchema,
 })
-const getNextCollisionSchema = yup.object().shape({
-  trainId: trainSchema,
-  time: timeSchema,
-});
 
 app.post('/schedule/:trainId', async (req, res, next) => {
   const { schedule } = req.body;
@@ -35,24 +32,26 @@ app.post('/schedule/:trainId', async (req, res, next) => {
   }
 
   try {
+    await scheduleNextTrain({ trainId, schedule });
     res.sendStatus(200);
   } catch (e) {
     next(e);
   }
 });
 
-app.get('/:trainId', async (req, res, next) => {
-  const { trainId } = req.params;
-  const { time } = req.query;
+app.get('/:time', async (req, res, next) => {
+  const { time } = req.params;
 
   try {
-    await getNextCollisionSchema.validate({time, trainId});
+    await timeSchema.validate(time);
   } catch (e) {
     return res.json(e.errors);
   }
 
   try {
-    res.send(200);
+    const response = await getNextMultiTrain(time);
+
+    res.send(response);
   } catch (e) {
     next(e);
   }

@@ -1,6 +1,7 @@
 import * as db from './db.js';
 import { Mutex } from 'async-mutex';
 import { TIME_KEYS, getISODateFrom } from '../utils/time.js';
+import * as utils from '../utils/schedule.js';
 
 export const STORE_KEY = 'store';
 
@@ -42,7 +43,7 @@ export async function scheduleNextTrain({ trainId, schedule, times = TIME_KEYS }
 
   try {
     const store = await db.fetch(STORE_KEY);
-    const updatedStore = schedule({ trainId, schedule, data: store, times });
+    const updatedStore = utils.schedule({ trainId, schedule, store, times });
     await db.set(STORE_KEY, updatedStore);
     await flushCache({ times });
   } catch (e) {

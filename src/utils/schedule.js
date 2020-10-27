@@ -1,5 +1,6 @@
 import * as db from '../models/db.js';
 import { STORE_KEY } from '../models/schedule.js';
+import { TIME_KEYS } from '../utils/time.js';
 
 async function dbIsEmpty() {
   const keys = await db.keys();
@@ -7,7 +8,7 @@ async function dbIsEmpty() {
 }
 
 // make an empty store object in the DB
-export async function initStore({ times }) {
+export async function initStore({ times = TIME_KEYS} = {}) {
   const isEmpty = await dbIsEmpty();
 
   if (!isEmpty) { return; }

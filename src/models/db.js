@@ -6,15 +6,15 @@ const TABLE_NAME = 'store';
 
 let store;
 
-const create = async () => {
+export const create = async () => {
   try {
     await connection.db.create(TABLE_NAME);
   } catch (e) {
     // idempontent function, so discard this error
-    if (e.reason === 'The database could not be created, the file already exists.') { return; }
-    console.error(e);
+    if (e.reason !== 'The database could not be created, the file already exists.') {
+      console.error(e);
+    }
   }
-
   store = connection.use(TABLE_NAME);
 }
 
@@ -37,18 +37,20 @@ export const reset = async () => {
   await create();
 }
 
-// Ensure DB created on connection
-create();
-
 // CORE API
-export const set = (key, value) => store.insert({value}, key);
+export const set = async (key, value) => {
+  if (!store) { await create(); }
+  await store.insert({value}, key)
+};
 
 export const fetch = async (key) => {
+  if (!store) { await create(); }
   const response = await store.get(key);
   return response?.value || null;
 }
 
 export const keys = async () => {
+  if (!store) { await create(); }
   const { rows } = await store.list()
   return rows.map(({ key }) => key);
 }
