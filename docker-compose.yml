@@ -2,7 +2,9 @@ version: "3"
 
 services:
   api:
-    image: node:14.14
+    build:
+      dockerfile: Dockerfile
+      context: .
     ports:
       - 3000:3000
     command: npm start
@@ -10,4 +12,5 @@ services:
       - PORT=3000
     working_dir: /app
     volumes:
-      - .:/app
+      - .:/app:delegated
+      - /app/node_modules

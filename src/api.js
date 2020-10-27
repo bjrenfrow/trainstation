@@ -12,6 +12,8 @@ app.use(express.json());
 // Init DB on start
 initStore({ times: TIME_KEYS });
 
+app.get('/ping', (req, res) => res.send('OK'));
+
 app.post('/schedule/:trainId', async (req, res, next) => {
   const { schedule } = req.body;
   const { trainId } = req.params;
