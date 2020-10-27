@@ -5,7 +5,7 @@ import * as utils from '../utils/schedule.js';
 
 export const STORE_KEY = 'store';
 
-// this is used to differentiated between an empty cache and no next multi train time
+// This is used to differentiated between an empty cache and no next multi train time
 export const NO_TIME_VALUE = 'NO_TIME';
 
 // Read Thru Cache
@@ -19,8 +19,7 @@ export function getNextMultiTrain(time) {
     db.set(time, nextTime);
   }
 
-
-  // There are no multi trains time slots coming up
+  // There are no multi train time slots coming up
   if (nextTime === NO_TIME_VALUE) {
     return null;
   }
@@ -29,13 +28,13 @@ export function getNextMultiTrain(time) {
   return getISODateFrom({ currentTimeOfDay: time, nextTimeOfDay: nextTime});
 }
 
-const lock = new Mutex();
-
 function flushCache({ times }) {
   for (let key of times) {
     db.set(key, undefined);
   }
 }
+
+const lock = new Mutex();
 
 export async function scheduleNextTrain({ trainId, schedule, times = TIME_KEYS }) {
   // locking is important so the main data state is not being overwritten
