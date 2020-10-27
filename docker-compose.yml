@@ -1,24 +1,13 @@
 version: "3"
 
 services:
-  db:
-    image: couchdb:3
-    ports:
-      - 5984:5984
-    environment:
-      - COUCHDB_USER=user
-      - COUCHDB_PASSWORD=pw
-
   api:
     image: node:14.14
     ports:
       - 3000:3000
     command: npm start
     environment:
-      - COUCHDB_URL=http://user:pw@db:5984
       - PORT=3000
     working_dir: /app
     volumes:
       - .:/app
-    depends_on:
-      - db

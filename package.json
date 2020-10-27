@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/api.js",
+    "start": "node src/api.js",
+    "start:dev": "nodemon src/api.js",
     "test": "NODE_ENV=test mocha 'tests/**/*.spec.js'"
   },
   "author": "",
