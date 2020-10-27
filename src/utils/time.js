@@ -25,7 +25,6 @@ const toHourAndMinute = (time) => ({
 });
 
 function happensTomorrow(now, next) {
-  console.log({ now, next });
   const hourIsEarlier = now.hour > next.hour;
   const minuteIsEarlier = now.hour === next.hour && now.minute >= next.minute;
 
@@ -45,17 +44,11 @@ export function getISODateFrom({ currentTimeOfDay, nextTimeOfDay }) {
   const minuteDelta = Math.abs(now.minute - next.minute);
   const hourDelta = Math.abs(now.hour - next.hour);
 
-  console.log({ minuteDelta, hourDelta });
-
   let today = DateTime.local().set({ hours: now.hour }).set({ minutes: now.minute });
 
-  console.log(today.toISO());
-
   if (happensTomorrow(now, next)) {
-    console.log('tomorrow');
    today = today.plus({ day: 1 }).minus({ minutes: minuteDelta }).minus({ hours: hourDelta});
   } else {
-    console.log('today');
    today = today.plus({ minutes: minuteDelta }).plus({ hours: hourDelta});
   }
 
