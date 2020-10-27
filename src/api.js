@@ -11,21 +11,25 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-// E.G. 9:12 PM
-const TIME_REGEX = /^(1[0-2]|0?[1-9]):([0-5]?[0-9])\s([AP]M)?$/;
-
+// E.G. 6:30PM is 1830
+const TIME_REGEX = /[0-9]{4}$/;
+const trainSchema = yup.string().trim().min(1).max(4).matches(/[A-Za-z0-9]/);
 const timeSchema = yup.string().matches(TIME_REGEX);
-const schema = yup.object().shape({
+const scheduleSchema = yup.object().shape({
   schedule: yup.array().of(timeSchema).required(),
-  trainId: yup.string().trim().min(1).max(4).matches(/[A-Za-z0-9]/).required()
+  trainId: trainSchema,
 })
+const getNextCollisionSchema = yup.object().shape({
+  trainId: trainSchema,
+  time: timeSchema,
+});
 
 app.post('/schedule/:trainId', async (req, res, next) => {
   const { schedule } = req.body;
   const { trainId } = req.params;
 
   try {
-    await schema.validate({ schedule, trainId });
+    await scheduleSchema.validate({ schedule, trainId });
   } catch (e) {
     return res.json(e.errors);
   }
@@ -39,9 +43,10 @@ app.post('/schedule/:trainId', async (req, res, next) => {
 
 app.get('/:trainId', async (req, res, next) => {
   const { trainId } = req.params;
+  const { time } = req.query;
 
   try {
-    await schema.validate(trainId);
+    await getNextCollisionSchema.validate({time, trainId});
   } catch (e) {
     return res.json(e.errors);
   }
