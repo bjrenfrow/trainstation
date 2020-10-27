@@ -25,30 +25,40 @@ const toHourAndMinute = (time) => ({
 });
 
 function happensTomorrow(now, next) {
+  console.log({ now, next });
   const hourIsEarlier = now.hour > next.hour;
-  const minuteIsEarlier = now.hour === next.hour && now.minute > next.minute;
+  const minuteIsEarlier = now.hour === next.hour && now.minute >= next.minute;
 
   return hourIsEarlier || minuteIsEarlier;
 }
 
 /**
- * Convert nextTime in HHMM format to the next isodate from now.
+ * Convert nextTimeOfDay in HHMM format to the next isodate from now.
  *
- * @param  {[type]} nextTime [HHMM time to calulate next isodate]
+ * @param  {[type]} nextTimeOfDay [HHMM time to calulate next isodate]
  * @return {[type]}          [isodate]
  */
-export function getISODateFrom(nextTime) {
-   const next = toHourAndMinute(nextTime);
-   let now = DateTime.local();
+export function getISODateFrom({ currentTimeOfDay, nextTimeOfDay }) {
+  const now = toHourAndMinute(currentTimeOfDay);
+  const next = toHourAndMinute(nextTimeOfDay);
 
-   const minuteDelta = Math.abs(now.minute - next.minute);
-   const hourDelta = Math.abs(now.hour - next.hour);
+  const minuteDelta = Math.abs(now.minute - next.minute);
+  const hourDelta = Math.abs(now.hour - next.hour);
 
-   if (happensTomorrow(now, next)) {
-     now = now.plus({ day: 1 }).minus({ minutes: minuteDelta }).minus({ hours: hourDelta});
-   } else {
-     now = now.plus({ minutes: minuteDelta }).plus({ hours: hourDelta});
-   }
+  console.log({ minuteDelta, hourDelta });
 
-   return now.toISO();
+  let today = DateTime.local().set({ hours: now.hour }).set({ minutes: now.minute });
+
+  console.log(today.toISO());
+
+  if (happensTomorrow(now, next)) {
+    console.log('tomorrow');
+   today = today.plus({ day: 1 }).minus({ minutes: minuteDelta }).minus({ hours: hourDelta});
+  } else {
+    console.log('today');
+   today = today.plus({ minutes: minuteDelta }).plus({ hours: hourDelta});
+  }
+
+  // zero out seconds and milliseconds to return minute percision
+  return today.set({ seconds: 0, milliseconds: 0 }).toISO();
 }

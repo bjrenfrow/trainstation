@@ -21,24 +21,17 @@ describe('API', function() {
         request(api).post(`/schedule/${trains[0]}`).send({
           schedule: ['1200', '1600', '1800'],
         }),
-        // request(api).post(`/schedule/${trains[1]}`).send({
-        //   schedule: ['0100', '1230', '1625'],
-        // }),
-        // request(api).post(`/schedule/${trains[2]}`).send({
-        //   schedule: ['0349', '2300', '1110'],
-        // }),
+        request(api).post(`/schedule/${trains[1]}`).send({
+          schedule: ['1200', '1230', '1625'],
+        }),
+        request(api).post(`/schedule/${trains[2]}`).send({
+          schedule: ['1230', '2300', '1110'],
+        }),
       ]);
-
-      console.log(responses.map(({ body }) => console.log(body)));
 
       const response = await request(api).get(`/1200`);
 
-      const keys = await db.keys();
-      console.log({ keys });
-
-      console.log(response.body);
-
-
+      console.log(response.text);
     });
   });
 

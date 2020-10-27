@@ -9,15 +9,16 @@ export const STORE_KEY = 'store';
 export const NO_TIME_VALUE = 'NO_TIME';
 
 // Read Thru Cache
-export async function getNextMultiTrain(time) {
-  let nextTime = await db.fetch(time);
+export function getNextMultiTrain(time) {
+  let nextTime = db.fetch(time);
 
   // No value in cache, grab value and put in cache
   if (!nextTime) {
-    const store = await db.fetch(STORE_KEY);
+    const store = db.fetch(STORE_KEY);
     nextTime = store[time]?.nextMultiTrain || NO_TIME_VALUE;
-    await db.set(time, nextTime);
+    db.set(time, nextTime);
   }
+
 
   // There are no multi trains time slots coming up
   if (nextTime === NO_TIME_VALUE) {
@@ -25,14 +26,14 @@ export async function getNextMultiTrain(time) {
   }
 
   //  calulate time from hour minute of next multi train
-  return getISODateFrom(nextTime);
+  return getISODateFrom({ currentTimeOfDay: time, nextTimeOfDay: nextTime});
 }
 
 const lock = new Mutex();
 
-export async function flushCache({ times }) {
+function flushCache({ times }) {
   for (let key of times) {
-    await db.set(key, undefined);
+    db.set(key, undefined);
   }
 }
 
@@ -42,10 +43,10 @@ export async function scheduleNextTrain({ trainId, schedule, times = TIME_KEYS }
   let release = await lock.acquire();
 
   try {
-    const store = await db.fetch(STORE_KEY);
+    const store = db.fetch(STORE_KEY);
     const updatedStore = utils.schedule({ trainId, schedule, store, times });
-    await db.set(STORE_KEY, updatedStore);
-    await flushCache({ times });
+    db.set(STORE_KEY, updatedStore);
+    flushCache({ times });
   } catch (e) {
     console.error(e);
   } finally {
