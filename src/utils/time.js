@@ -19,13 +19,10 @@ export function generateTimeKeys({ hours = 24, minutes = 60 } = {}) {
 
 export const TIME_KEYS = generateTimeKeys();
 
-
-function toHourAndMinute(time) {
-  return {
-    hour: time.substring(0,2),
-    minute: time.substring(2,4),
-  };
-}
+const toHourAndMinute = (time) => ({
+  hour: time.substring(0,2),
+  minute: time.substring(2,4),
+});
 
 function happensTomorrow(now, next) {
   const hourIsEarlier = now.hour > next.hour;
