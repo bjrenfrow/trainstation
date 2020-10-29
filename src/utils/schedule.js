@@ -71,7 +71,7 @@ export function schedule({ store, trainId, schedule, times }) {
     // Is a Multi train time?
     if (trainCountAtTime > 1) {
       // Track the first one so we can do a full loop from here.
-      if (!nextMulti) { firstMulti = time; }
+      if (!firstMulti) { firstMulti = time; }
 
       nextMulti = time;
     }
